@@ -310,7 +310,7 @@ FLEX.EX = [
     how: 'Horse stance holding a weight; squat a little lower each rep and hold the last.', cue: 'Build to a 2&ndash;3 minute horse stance hold first.', note: 'Second exercise in this routine' },
   { id: 'cossack', n: 'Cossack squat', m: 'strength', t: 3, lv: 0,
     lim: ['adductors_long', 'active'], sk: ['middle', 'pancake', 'squat'],
-    v: ['nAeU-4QDl1I', 'Skater Squat and Cossack Squat Tutorial', 'Kit Laughlin'],
+    v: ['JaCbmoDqUc4', 'How To Cossack Squat (Beginner to Advanced)', 'Flexibility Maestro'],
     how: 'Shift onto one bent leg, the other straight out to the side, toes up. Stand back up.', cue: 'Foot faces forward; arch stays up.' },
   { id: 'copenhagen', n: 'Copenhagen plank', m: 'strength', t: 3, lv: 0,
     lim: ['adductors_short', 'active'], sk: ['middle', 'pancake'],
