@@ -194,20 +194,39 @@
 
   function renderSettings() {
     $('#settings').innerHTML = '<div class="days">' + DAYS.map(function (d, i) {
-      return '<label class="day"><span>' + d + '</span><select data-day="' + i + '" aria-label="' + DAY_FULL[i] + '">' + TYPES.map(function (t) {
+      var cur = TYPES.filter(function (t) { return t[0] === state.days[i]; })[0];
+      return '<label class="day t-' + cur[0] + '"><b>' + d + '</b><span class="dt">' + cur[1] + '</span><span class="chev" aria-hidden="true">&#9662;</span>' +
+        '<select data-day="' + i + '" aria-label="' + DAY_FULL[i] + ' training">' + TYPES.map(function (t) {
         return '<option value="' + t[0] + '"' + (state.days[i] === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select></label>';
-    }).join('') + '</div><div class="row2">' +
+    }).join('') + '</div><p class="legend">Tap a day to set what you train. Your stretch days work around it.</p><div class="row2">' +
       '<label>Stretch sessions a week <select id="nsess">' + [1, 2, 3].map(function (n) { return '<option' + (state.n === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label>' +
       '<label>Stretches per session <select id="nsize">' + [['auto', 'Auto (3–5)'], ['3', '3'], ['4', '4'], ['5', '5']].map(function (o) {
         return '<option value="' + o[0] + '"' + (String(state.sizeMode) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
       '<label><input type="checkbox" id="nosun"' + (state.noSun ? ' checked' : '') + '> Keep Sunday free</label></div>';
   }
   $('#settings').addEventListener('change', function (e) {
-    if (e.target.dataset.day) state.days[+e.target.dataset.day] = e.target.value;
-    if (e.target.id === 'nsess') state.n = +e.target.value;
+    if (e.target.dataset.day) { state.days[+e.target.dataset.day] = e.target.value; renderSettings(); }
+    if (e.target.id === 'nsess') { state.n = +e.target.value; state.custom = {}; }
     if (e.target.id === 'nsize') state.sizeMode = e.target.value;
     if (e.target.id === 'nosun') state.noSun = e.target.checked;
     persist(); renderPlan();
+  });
+
+  // Tap a day on "Your week" to add/remove a stretch session for this skill.
+  $('#plan-out').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-wd]');
+    if (b) {
+      var d = +b.dataset.wd, sk = state.skill;
+      var cur = schedule(sk).filter(function (r) { return r.kind === 'focus'; }).map(function (r) { return r.d; });
+      var i = cur.indexOf(d);
+      if (i >= 0) cur.splice(i, 1); else cur.push(d);
+      state.custom = state.custom || {};
+      state.custom[sk] = cur.sort();
+      persist(); renderPlan();
+      var nb = document.querySelector('[data-wd="' + d + '"]'); if (nb) nb.focus();
+      return;
+    }
+    if (e.target.id === 'wk-reset') { if (state.custom) delete state.custom[state.skill]; persist(); renderPlan(); }
   });
 
   /* ---------------- engine: limiters ---------------- */
@@ -329,11 +348,14 @@
       var val = (ok ? 1000 : 0) + total * 10 + minGap;
       if (!best || val > best.val) best = { c: c, val: val };
     });
-    var focus = best ? best.c : [];
+    var custom = state.custom && state.custom[skill];
+    var focus = custom ? custom.slice() : best ? best.c : [];
     return info.map(function (x) {
-      var row = { day: DAY_FULL[x.d], type: TYPES.filter(function (t) { return t[0] === days[x.d]; })[0][1] };
-      if (x.excluded) { row.kind = 'rest'; row.what = 'Rest'; }
-      else if (focus.indexOf(x.d) >= 0) {
+      var row = { d: x.d, day: DAY_FULL[x.d], type: TYPES.filter(function (t) { return t[0] === days[x.d]; })[0][1] };
+      var isFocus = focus.indexOf(x.d) >= 0;
+      if (isFocus) row.close = focus.some(function (o) { var g = Math.abs(o - x.d); return o !== x.d && Math.min(g, 7 - g) < 2; });
+      if (x.excluded && !isFocus) { row.kind = 'rest'; row.what = 'Rest'; }
+      else if (isFocus) {
         row.kind = 'focus';
         row.what = x.conflict ? 'Focus session &mdash; in the evening, 6+ hours after lifting'
           : x.gap >= 2 ? 'Focus session &mdash; any time (2+ days after your last session that loads these areas: ideal)'
@@ -427,11 +449,18 @@
     if (notes.length) h += '<p class="legend">' + notes.join(' ') + '</p>';
 
     // week
+    var custom = state.custom && state.custom[p.skill];
     h += '<h2 style="--c:var(--aqua)"><span class="dot"></span>Your week</h2><div class="week">' + p.sched.map(function (r) {
-      var lab = r.kind === 'focus' ? 'Stretch' + (/evening/.test(r.what) ? '<br>eve' : '') : r.kind === 'maint' ? 'Easy' : 'Rest';
-      return '<div class="' + r.kind + '"><b>' + r.day.slice(0, 3) + '</b>' + lab + '</div>';
+      var lab = r.kind === 'focus' ? 'Stretch' + (/evening/.test(r.what) ? '<small>evening</small>' : '') : r.kind === 'maint' ? 'Easy' : 'Rest';
+      return '<button type="button" data-wd="' + r.d + '" class="' + r.kind + (r.close ? ' close' : '') + '" aria-pressed="' + (r.kind === 'focus') + '"' +
+        ' aria-label="' + r.day + ': ' + txt(lab) + '. Tap to ' + (r.kind === 'focus' ? 'remove' : 'add') + ' a stretch session">' +
+        '<b>' + r.day.slice(0, 3) + '</b><span class="wk-lift t-' + state.days[r.d] + '">' + r.type + '</span>' + lab + '</button>';
     }).join('') + '</div>' +
-      '<p class="legend"><i style="background:var(--orange)"></i>Full session<i style="background:var(--aqua)"></i>5&ndash;10 min easy &middot; Weeks 1&ndash;3 build up, week 4 lighter, then reassess.</p>';
+      '<p class="legend"><i style="background:var(--orange)"></i>Full session<i style="background:var(--aqua)"></i>5&ndash;10 min easy &middot; ' +
+      '<b>Tap a day</b> to add or move a stretch session.' +
+      (p.sched.some(function (r) { return r.close; }) ? ' <span class="warn">Red outline: stretch days back to back. Leave 48 h between them for this skill.</span>' : '') +
+      (custom ? ' <button type="button" class="linkbtn" id="wk-reset">Back to suggested days</button>' : '') +
+      ' Weeks 1&ndash;3 build up, week 4 lighter, then reassess.</p>';
     h += '<div class="btnrow"><button type="button" class="btn" id="card-open">Phone image</button><button type="button" class="btn ghost" id="print">Print</button>' +
       '<button type="button" class="btn ghost" data-go="library">All ' + short(p.skill).toLowerCase() + ' stretches</button></div><div id="card-panel" hidden></div>';
     box.innerHTML = h;

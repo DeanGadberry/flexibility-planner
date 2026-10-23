@@ -98,8 +98,15 @@ details[open] > summary { margin-bottom: 4px; }
 .progress i { display: block; height: 100%; background: var(--c, var(--orange)); border-radius: 99px; transition: width .2s; }
 
 .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.day { display: flex; flex-direction: column; gap: 2px; font-size: .78rem; text-align: center; font-family: var(--sans); font-weight: 600; }
-.day select { font-size: .72rem; padding: 4px 0; border-radius: 8px; border: 1px solid var(--line); background: var(--bg1); width: 100%; }
+.day { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0 6px; border-radius: 10px;
+  background: color-mix(in srgb, var(--tc) 22%, var(--card)); border: 2px solid color-mix(in srgb, var(--tc) 60%, transparent);
+  font: 600 .7rem/1.2 var(--sans); text-align: center; color: var(--fg); cursor: pointer; }
+.day b { font-size: .85rem; }
+.day .dt { font-size: .72rem; }
+.day .chev { font-size: .6rem; color: var(--muted); line-height: 1; }
+.day select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.day:focus-within { outline: 2px solid var(--fg); outline-offset: 2px; }
+.t-rest { --tc: var(--muted); } .t-upper { --tc: var(--blue); } .t-lower { --tc: var(--green); } .t-full { --tc: var(--purple); } .t-cardio { --tc: var(--yellow); }
 .row2 { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; align-items: center; }
 .row2 select { border-radius: 8px; border: 1px solid var(--line); background: var(--bg1); padding: 3px 6px; }
 
@@ -148,8 +155,16 @@ details[open] > summary { margin-bottom: 4px; }
 
 /* week */
 .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.week div { border-radius: 10px; padding: 6px 0; text-align: center; font: 600 .7rem/1.2 var(--sans); background: var(--bg2); color: var(--muted); }
-.week div b { display: block; font-size: .85rem; }
+.week > button { border: 2px solid transparent; border-radius: 10px; padding: 6px 0; text-align: center; font: 600 .7rem/1.2 var(--sans); background: var(--bg2); color: var(--muted); cursor: pointer; min-height: 64px; }
+.week > button b { display: block; font-size: .85rem; }
+.week > button small { display: block; font-size: .62rem; font-weight: 500; }
+.week .wk-lift { display: block; margin: 2px auto 3px; width: calc(100% - 8px); border-radius: 5px; font-size: .6rem; font-weight: 600; padding: 1px 0;
+  background: color-mix(in srgb, var(--tc) 25%, transparent); color: var(--fg); }
+.week .focus .wk-lift { background: rgba(0,0,0,.18); color: inherit; }
+.week > button.close { border-color: var(--red); }
+.week > button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.warn { color: var(--red); }
+.linkbtn { border: 0; background: none; padding: 0; font: inherit; color: var(--blue); text-decoration: underline; cursor: pointer; }
 .week .focus { background: var(--orange); color: var(--on-accent); }
 .week .maint { background: color-mix(in srgb, var(--aqua) 30%, var(--card)); color: var(--fg); }
 .legend { font-size: .88rem; color: var(--fg2); margin: 6px 0 0; }
