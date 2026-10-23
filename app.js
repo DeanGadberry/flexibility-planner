@@ -104,7 +104,9 @@
       '<div class="txt"><b>' + e.n + '</b><span class="tag">' + m.label + '</span><span class="dose">' + sub + '</span>' +
       '<button type="button" class="howbtn" aria-expanded="false" aria-controls="' + id + '">Show me how</button></div></div>' +
       '<div class="howbox" id="' + id + '" hidden><p>' + e.how + ' <i>' + e.cue + '</i></p>' +
-      (e.note ? '<p class="muted">' + e.note + '</p>' : '') + '<div class="vslot" data-v="' + esc(JSON.stringify(e.v)) + '"></div></div></li>';
+      (e.feel ? '<p class="feel"><b>Where you should feel it.</b> ' + e.feel + '</p>' : '') +
+      (e.note ? '<p class="muted">' + e.note + '</p>' : '') + '<div class="vslot" data-v="' + esc(JSON.stringify(e.v)) + '"></div>' +
+      (e.v2 ? '<p class="vlabel">What PAILs and RAILs are, and how hard to press</p><div class="vslot" data-v="' + esc(JSON.stringify(e.v2)) + '"></div>' : '') + '</div></li>';
   }
   document.addEventListener('click', function (e) {
     var hb = e.target.closest('.howbtn, .thumb');
@@ -112,8 +114,9 @@
       var bid = hb.getAttribute('aria-controls') || hb.dataset.how, box = document.getElementById(bid);
       var btn = box.parentNode.querySelector('.howbtn'), open = box.hidden;
       box.hidden = !open; btn.setAttribute('aria-expanded', open); btn.textContent = open ? 'Hide' : 'Show me how';
-      var slot = box.querySelector('.vslot');
-      if (open && slot && !slot.innerHTML) { var v = JSON.parse(slot.dataset.v); slot.innerHTML = video(v[0], v[1], v[2]); }
+      if (open) [].forEach.call(box.querySelectorAll('.vslot'), function (slot) {
+        if (!slot.innerHTML) { var v = JSON.parse(slot.dataset.v); slot.innerHTML = video(v[0], v[1], v[2]); }
+      });
       return;
     }
     var b = e.target.closest('.vf .play');
