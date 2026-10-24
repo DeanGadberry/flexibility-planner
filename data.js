@@ -564,8 +564,9 @@ FLEX.EX = [
     v: ['K3pLHmnkD0A', 'Back To Wall Shoulder Overhead Reach', 'Travis English'],
     how: 'Stand with head, upper back and hips on a wall and the low back flattened. Raise straight arms overhead toward the wall without letting the ribs flare or the back arch.', cue: 'Ribs down &mdash; range only counts if the back stays flat.' },
   { id: 'pelvic_tilt', n: 'Pelvic tilt drill', m: 'technique', t: 4, lv: 0, lim: ['technique'], sk: ['pike', 'pancake'],
-    v: ['ZIQjHtghzqw', 'Pelvic Tilt', 'Baptist Health'],
-    how: 'Learn to tip the pelvis forward and back on its own. Then sit in your pike and fold by tipping the pelvis forward first, keeping the back flat, before you let the spine round.', cue: 'Hips hinge first; spine last.' }
+    v: ['jspiCOaU-Tg', 'Pelvic Tilts - Anterior to Posterior', 'Clear Cut Fitness'],
+    how: 'Sit on the edge of a folded towel, legs straight, hands on the floor beside your hips. Roll the pelvis forward so you sit up onto the front of your sit bones and your low back arches a little (belt buckle tips down toward your thighs). Then roll back so the low back rounds. 10 slow reps. Finally, lock the forward tilt in and fold from there, chest leading, back flat; stop the moment the low back starts to round.', cue: 'Belt buckle toward the thighs; hips hinge first, spine last.',
+    feel: 'Working: the fronts of the hips (hip flexors) and the muscles beside the low spine pull the pelvis forward; you may feel them cramp. Stretching: the backs of the thighs start to pull much earlier than when you round, often right near the sit bones. That early hamstring pull is the point: it means the hamstrings, not your back, are now the limit.' }
 ];
 
 /* ---------------------------------------------------------------- */
